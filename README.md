@@ -69,16 +69,9 @@ Object Detection -> YOLOv8
 
 ##Installation
 
-Clone Repository
-->git clone https://github.com/YOUR_USERNAME/HAL_SURVILIENCE_PROJECT.git
-Install Dependencies
-->pip install -r requirements.txt
-Run Project
-->python app.py
+1.Clone Repository->git clone https://github.com/YOUR_USERNAME/HAL_SURVILIENCE_PROJECT.git
+2.Install Dependencies->pip install -r requirements.txt
+3.Run Project->python app.py
 
-
-##Dashboard:
-
-![Uploading Screenshot (222).png…]()
 
 
