@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAL AI Surveillance System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* TACTICAL CIRCULAR LOADER STYLING */
+        .loader-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 22, 34, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .circular-loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #1a2436;
+            border-top: 5px solid #00C2FF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            color: #00C2FF;
+            font-family: monospace;
+            font-size: 14px;
+            letter-spacing: 2px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+         AI SURVEILLANCE & TARGET MONITORING SYSTEM
+    </header>
+
+    <div class="main-container">
+
+        <div class="sidebar">
+            <button onclick="startSurveillance()" style="border-left: 4px solid #00c851;">START SURVEILLANCE</button>
+            <button onclick="stopSurveillance()" style="border-left: 4px solid #ff4444;">STOP SURVEILLANCE</button>
+            <button onclick="switchToUploadMode()" style="border-left: 4px solid #00C2FF; background-color: #1a2436;">INVESTIGATIVE ANALYSIS</button>
+            <button onclick="viewCSVLogs()" style="border-left: 4px solid #ab47bc;">VIEW SURVEILLANCE LOGS</button>
+            <button onclick="downloadReport()" style="border-left: 4px solid #ffbb33; background-color: #243249;">DOWNLOAD REPORT</button>
+
+            <div class="status-panel">
+                <h3>SYSTEM STATUS</h3>
+                <p>Camera: <span id="cam-status" style="font-weight: bold; color: #ff4444;">INACTIVE</span></p>
+                <p>Recognition: <span id="rec-status" style="font-weight: bold;">OFFLINE</span></p>
+                <p>Targets Detected: <span id="targets-count" style="font-weight: bold;">0</span></p>
+                <p>System Status: <span id="sys-state" style="font-weight: bold; color: #ffbb33;">STANDBY</span></p>
+            </div>
+        </div>
+
+        <div class="feed-section">
+            <div class="feed-box" style="position: relative; width: 100%; height: 500px; background: #000000; border: 2px solid #243249; display: flex; justify-content: center; align-items: center;">
+                
+                <div id="loader-overlay" class="loader-overlay">
+                    <div class="circular-loader"></div>
+                    <div class="loader-text">RUNNING VECTOR SCANNERS...</div>
+                </div>
+
+                <img id="live-camera-feed" src="{{ url_for('video_feed') }}" width="100%" height="100%" style="object-fit: contain; {% if processed_img_path %}display: none;{% endif %}">
+                
+                <div id="manual-upload-panel" style="width: 100%; height: 100%; display: {% if processed_img_path %}flex{% else %}none{% endif %}; flex-direction: column; justify-content: center; align-items: center; padding: 30px; box-sizing: border-box; background: #0d1622; color: #ffffff;">
+                    
+                    {% if not processed_img_path %}
+                    <h3 style="color: #00C2FF; margin-bottom: 5px; font-size: 18px; letter-spacing: 1px;">⚙️ SECURE TARGET DISPATCH PANEL</h3>
+                    <p style="color: #8a99ad; font-size: 13px; margin-bottom: 25px;">Load a high-resolution snapshot matrix to route through static classification networks.</p>
+                    
+                    <form action="/upload_verify" method="post" enctype="multipart/form-data" onsubmit="showLoader()" style="display: flex; flex-direction: column; align-items: center; gap: 15px; width: 80%; max-width: 450px;">
+                        <input type="file" name="query_img" accept="image/*" required style="background: #111a24; padding: 12px; border: 1px dashed #2c3e50; border-radius: 4px; color: #fff; width: 100%; text-align: center;">
+                        <div style="display: flex; gap: 10px; width: 100%;">
+                            <button type="submit" style="flex: 2; background-color: #0044cc; border: none; border-left: 4px solid #00C2FF; color: white; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; letter-spacing: 0.5px;">RUN VECTOR SCANNERS</button>
+                            <button type="button" onclick="cancelUploadMode()" style="flex: 1; background: #2c3e50; border: none; color: white; border-radius: 4px; cursor: pointer;">CANCEL</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    
+                    <div style="display: flex; width: 100%; height: 100%; gap: 20px; align-items: center; text-align: left;">
+                        <div style="flex: 1.2; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                            <h4 style="margin: 0 0 8px 0; color: #ffbb33; font-size: 13px; letter-spacing: 0.5px;">🎯 EVALUATED TELEMETRY FRAME:</h4>
+                            <img src="{{ processed_img_path }}" alt="Analyzed Target" style="max-height: 400px; max-width: 100%; border: 2px solid #243249; border-radius: 4px; object-fit: contain; background: #000;">
+                        </div>
+                        <div style="flex: 0.8; background: #111a24; padding: 20px; border-radius: 4px; border: 1px solid #2c3e50; height: 85%; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <h4 style="margin: 0 0 12px 0; color: #00c851; font-size: 14px; border-bottom: 1px solid #2c3e50; padding-bottom: 5px;">📊 VECTOR EXTRACTION REPORT</h4>
+                                <p style="font-size: 12px; color: #8a99ad; margin-bottom: 5px;">Identified Signatures:</p>
+                                <ul style="margin: 0; padding-left: 20px; font-family: monospace; color: #00C2FF; font-size: 15px; font-weight: bold; line-height: 1.6;">
+                                    {% if detections %}
+                                        {% for item in detections %}
+                                            <li>{{ item }}</li>
+                                        {% endfor %}
+                                    {% else %}
+                                        <li style="color: #ff4444; list-style: none; padding-left: 0;">NO SIGNATURE MATCHES DETECTED</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                                <button type="button" onclick="resetToUploadForm()" style="background: #00C2FF; color: #111a24; border: none; padding: 10px; font-weight: bold; border-radius: 4px; width: 100%; cursor: pointer;">🔄 SCAN ANOTHER IMAGE</button>
+                                <button type="button" onclick="cancelUploadMode()" style="background: #2c3e50; color: #ffffff; border: none; padding: 10px; font-weight: bold; border-radius: 4px; width: 100%; cursor: pointer;">RETURN TO LIVE FEED</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="logs-panel">
+        <h3>EVENT LOGS</h3>
+        <div class="log-content" id="live-logs-box">
+            System initialized successfully...
+        </div>
+    </div>
+
+</body>
+
+<script>
+    function startSurveillance() {
+        cancelUploadMode(); 
+        fetch('/start').then(response => response.text());
+    }
+
+    function stopSurveillance() {
+        fetch('/stop').then(response => response.text());
+    }
+
+    function viewCSVLogs() {
+        window.open('/view_raw_logs', '_blank');
+    }
+
+    function downloadReport() {
+        window.location.href = '/download_report';
+    }
+
+    // SHOW LOADER FUNCTION ON FORM SUBMIT
+    function showLoader() {
+        document.getElementById('loader-overlay').style.display = 'flex';
+    }
+
+    // INTERFACE PANEL MODE TOGGLES
+    function switchToUploadMode() {
+        stopSurveillance(); 
+        document.getElementById('live-camera-feed').style.display = 'none';
+        document.getElementById('manual-upload-panel').style.display = 'flex';
+        
+        // If results are already showing, force a reset back to the clean file picking form view
+        if (window.location.pathname.includes("upload_verify") || document.querySelector('.analysis-results') || !document.forms[0]) {
+            resetToUploadForm();
+        }
+    }
+
+    function resetToUploadForm() {
+        // Redirect completely back to home route to naturally clear out old POST parameters and clean the viewport
+        window.location.href = "/?mode=upload";
+    }
+
+    function cancelUploadMode() {
+        document.getElementById('manual-upload-panel').style.display = 'none';
+        document.getElementById('live-camera-feed').style.display = 'block';
+        if(window.location.search || window.location.pathname.includes("upload_verify")) {
+            window.location.href = "/";
+        }
+    }
+
+    // Handle initial loading mode if coming back via reset redirection
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('mode') === 'upload') {
+            stopSurveillance();
+            document.getElementById('live-camera-feed').style.display = 'none';
+            document.getElementById('manual-upload-panel').style.display = 'flex';
+        }
+    });
+
+    // HIGH-FREQUENCY TELEMETRY POLLER 
+    function checkSystemTelemetry() {
+        fetch('/system_status')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('cam-status').innerText = data.camera;
+                document.getElementById('rec-status').innerText = data.recognition;
+                document.getElementById('targets-count').innerText = data.targets_detected;
+                document.getElementById('sys-state').innerText = data.system_status;
+
+                const logBox = document.getElementById('live-logs-box');
+                if (logBox && data.logs && data.logs.length > 0) {
+                    logBox.innerHTML = data.logs.join("<br>");
+                    logBox.scrollTop = logBox.scrollHeight;
+                }
+
+                if (data.camera === "ACTIVE") {
+                    document.getElementById('cam-status').style.color = "#00c851";
+                } else {
+                    document.getElementById('cam-status').style.color = "#ff4444";
+                }
+
+                if (data.recognition === "ON AIR") {
+                    document.getElementById('rec-status').style.color = "#00c851";
+                } else {
+                    document.getElementById('rec-status').style.color = "#aaaaaa";
+                }
+
+                let stateBox = document.getElementById('sys-state');
+                if (data.system_status.includes("ALERT")) {
+                    stateBox.style.color = "#ff4444";
+                } else if (data.system_status === "SECURE") {
+                    stateBox.style.color = "#00c851";
+                } else {
+                    stateBox.style.color = "#ffbb33";
+                }
+            })
+            .catch(error => console.error('Telemetry pipeline disconnect:', error));
+    }
+
+    setInterval(checkSystemTelemetry, 600);
+</script>
+
+</html>

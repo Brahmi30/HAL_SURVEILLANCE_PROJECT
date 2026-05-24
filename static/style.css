@@ -1,0 +1,205 @@
+/* Entire Page */
+
+body {
+
+    margin: 0;
+
+    font-family: "Segoe UI", sans-serif;
+
+    background-color: #0B0F19;
+
+    color: #E5E7EB;
+}
+
+/* Header */
+
+.header {
+
+    text-align: center;
+
+    font-size: 34px;
+
+    font-weight: bold;
+
+    padding: 25px;
+
+    background-color: #121826;
+
+    color: #00C2FF;
+
+    border-bottom: 2px solid #1E293B;
+
+    letter-spacing: 1px;
+}
+
+/* Main Layout */
+
+.main-container {
+
+    display: flex;
+
+    min-height: 72vh;
+}
+/* Sidebar */
+
+.sidebar {
+
+    width: 22%;
+
+    background-color: #121826;
+
+    padding: 20px;
+
+    border-right: 2px solid #1E293B;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    gap: 10px;
+
+    box-sizing: border-box;
+}
+/* Buttons */
+
+.sidebar button {
+
+    background-color: #1E293B;
+
+    color: #E5E7EB;
+
+    border: none;
+
+    padding: 14px;
+
+    margin-bottom: 15px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+
+    text-align: left;
+}
+
+/* Button Hover */
+
+.sidebar button:hover {
+
+    background-color: #00C2FF;
+
+    color: #0B0F19;
+}
+
+/* Status Panel */
+
+.status-panel {
+
+    margin-top: 20px;
+
+    background-color: #1A2235;
+
+    padding: 15px;
+
+    border: 1px solid #2D3748;
+
+    line-height: 1.8;
+}
+.status-panel h3 {
+
+    color: #00C2FF;
+}
+
+/* Feed Section */
+
+.feed-section {
+
+    width: 78%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+}
+
+/* Feed Box */
+
+.feed-box {
+
+    width: 95%;
+
+    height: 90%;
+
+    border: 2px solid #00C2FF;
+
+    background-color: black;
+
+    overflow: hidden;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+}
+.feed-box img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+}
+/* Logs Panel */
+/* Logs Panel */
+
+.logs-panel {
+
+    background-color: #121826;
+
+    border: 1px solid #1E293B;
+
+    margin: 20px;
+
+    padding: 20px;
+
+    border-radius: 4px;
+
+    box-sizing: border-box;
+}
+
+/* Logs Title */
+
+.logs-panel h3 {
+
+    color: #00C2FF;
+
+    margin-bottom: 15px;
+}
+
+/* Log Content Box */
+
+.log-content {
+
+    margin-top: 10px;
+
+    background-color: #1A2235;
+
+    padding: 15px;
+
+    border: 1px solid #2D3748;
+
+    border-radius: 4px;
+
+    height: 100px;
+
+    overflow-y: auto;
+
+    line-height: 1.6;
+}
